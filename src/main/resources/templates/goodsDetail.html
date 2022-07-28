@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情</title>
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">秒杀商品详情</div>
+        <div class="panel-body">
+            <span th:if="${user eq null}"> 您还没有登录，请登陆后再操作<br/></span>
+        </div>
+        <table class="table" id="goods">
+            <tr>
+                <td>商品名称</td>
+                <td colspan="3" th:text="${goods.goodsName}"></td>
+            </tr>
+            <tr>
+                <td>商品图片</td>
+                <td colspan="3"><img th:src="@{${goods.goodsImg}}" width="200" height="200"/></td>
+            </tr>
+            <tr>
+                <td>秒杀开始时间</td>
+                <td th:text="${#dates.format(goods.gmtStart)}"></td>
+                <td id="seckillTip">
+                    <input type="hidden" id="remainSeconds" th:value="${remainSec}"/>
+                    <span th:if="${seckillStatus eq 0}">秒杀倒计时:
+                        <span id="countDown" th:text="${remainSec} + '秒'"></span>
+                    </span>
+                    <span th:if="${seckillStatus eq 1}">秒杀进行中</span>
+                    <span th:if="${seckillStatus eq 2}">秒杀已结束</span>
+                </td>
+            </tr>
+            <tr>
+                <td>商品原价</td>
+                <td colspan="3" th:text="${goods.goodsPrice}"></td>
+            </tr>
+            <tr>
+                <td>秒杀价</td>
+                <td colspan="3" th:text="${goods.seckillPrice}"></td>
+            </tr>
+            <tr>
+                <td>库存数量</td>
+                <td colspan="3" th:text="${goods.seckillStock}"></td>
+            </tr>
+        </table>
+        <div style="margin:auto;text-align: center">
+            <form id="secKill" method="post" action="/seckill/doSeckill">
+                <input type="hidden" name="goodId" th:value="${goods.getId()}">
+                <button type="submit" class="btn btn-danger btn-block" id="buyButton">立即秒杀</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $(function (){
+        countDown();
+    });
+    function countDown(){
+        var remainSec = $("#remainSeconds").val();
+        var timeout;
+        if(remainSec > 0){
+            $("#buyButton").attr("disabled",true);
+            timeout = setTimeout(function (){
+                $("#countDown").text(remainSec - 1 + '秒');
+                $("#remainSeconds").val(remainSec - 1);
+                countDown();
+            },1000);
+        }else if(remainSec == 0){
+            clearTimeout(timeout);
+            $("#seckillTip").text("秒杀进行中");
+            $("#buyButton").attr("disabled",false);
+        }else {
+            $("#buyButton").attr("disabled",true);
+            $("#seckillTip").text("秒杀已结束");
+        }
+    }
+</script>
+</html>

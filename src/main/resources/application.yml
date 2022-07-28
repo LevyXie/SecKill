@@ -1,0 +1,103 @@
+spring:
+  # 静态资源处理
+  resources:
+    # 启动静态资源处理，默认为true
+    add-mappings: true
+    cache:
+      cachecontrol:
+        # 缓存的响应时间：秒
+        max-age: 3600
+    chain:
+      cache: true
+      # 启用资源链，默认禁用
+      enabled: true
+      # 启用压缩资源，默认禁用
+      compressed: true
+      # 启用html5应用缓存，默认禁用
+      html-application-cache: true
+    static-locations: classpath:/static/
+  # 关闭thymeleaf缓存
+  thymeleaf:
+    cache: false
+  #设置数据源
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: "root"
+    password: "admin"
+    hikari:
+      pool-name: HikariCP
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 空闲连接存活时间，默认10min，修改为30min
+      idle-timeout: 1800000
+      # 最大连接数，默认10
+      maximum-pool-size: 10
+      # 自动提交
+      auto-commit: true
+      # 最大存活时间,0表示永久存活
+      max-lifetime: 1800000
+      # 超时时间，默认30s
+      connection-timeout: 30000
+      # 心跳机制，测试连接是否可用
+      connection-test-query: SELECT 1
+  # 配置redis
+  redis:
+    host: 192.168.200.130
+    port: 6379
+    database: 0
+    timeout: 10000ms
+    lettuce:
+      pool:
+        # 最大连接数
+        max-active: 8
+        # 最大连接等待时间，默认-1
+        max-wait: 10000ms
+        # 最大空闲连接
+        max-idle: 8
+        # 最小空闲连接
+        min-idle: 5
+  # 配置rabbitmq
+  rabbitmq:
+    host: 192.168.200.130
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        # 消费者最小数量
+        concurrency: 10
+        # 最大数量
+        max-concurrency: 10
+        # 每次获取1条消息
+        prefetch: 1
+        # 默认启动
+        auto-startup: true
+        # 被拒绝时重新进入队列
+        default-requeue-rejected: true
+    template:
+      # 开启重试
+      retry:
+        enabled: true
+        # 重试时间，默认1000ms
+        initial-interval: 1000ms
+        # 重试次数，默认3次
+        max-attempts: 3
+        # 重试最大间隔时间,默认10000ms
+        max-interval: 10000ms
+        # 重试的间隔乘数
+        multiplier: 1
+
+mybatis-plus:
+  # 设置xml文件编译的加载路径
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  # 设置Mybatis数据返回的别名
+  type-aliases-package: top.levygo.seckill.entity
+  # mybatis-plus的日志信息（sql语句）
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  port: 8990
+
